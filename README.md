@@ -110,6 +110,7 @@ Built-in knowledge for SaaS best practices:
 - **db-patterns** — Row-level security, migrations, indexing
 - **testing-patterns** — Test pyramid, factories, mocking
 - **deployment-patterns** — Docker, CI/CD, monitoring
+- **ui-ux-pro-max** — 50 design styles, 21 color palettes, 50 font pairings, responsive layouts, accessibility
 
 ## Configuration
 
@@ -138,8 +139,8 @@ Every component can be individually selected or customized. The framework adapts
 1. **`npx saas-playbook init`** copies the framework files into your project
 2. **`/init`** in Claude Code runs the setup wizard to configure your project
 3. **`/add-*` commands** scaffold features with code tailored to your stack
-4. **Agents** handle complex design tasks (architecture, API design, etc.)
-5. **Skills** provide domain knowledge for high-quality code generation
+4. **Agents** handle complex design tasks (architecture, API design, UI/UX, etc.)
+5. **Skills** provide domain knowledge for high-quality code generation and design
 6. **`.saas-playbook.yml`** keeps everything in sync across commands
 
 ## License

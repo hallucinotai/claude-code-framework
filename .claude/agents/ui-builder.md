@@ -57,9 +57,19 @@ When building UI, provide:
 3. Integration instructions (where to import, how to use)
 4. Notes on accessibility considerations
 
+## UI/UX Design Skill
+
+Reference the **ui-ux-pro-max** skill (`.claude/skills/ui-ux-pro-max/SKILL.md`) for design decisions including:
+- Design styles (glassmorphism, minimalism, brutalism, neumorphism, bento grid, etc.)
+- Color palettes and theme generation
+- Font pairings and typography scales
+- Layout patterns for dashboards, landing pages, and SaaS applications
+- Responsive breakpoints and mobile-first strategies
+
 ## Interaction Style
 
 - Read `.saas-playbook.yml` to understand frontend framework and CSS approach
+- Reference the `ui-ux-pro-max` skill for design patterns and visual decisions
 - Scan existing components to match patterns and conventions
 - Use the project's CSS framework (Tailwind, CSS Modules, etc.)
 - Follow the project's file organization conventions

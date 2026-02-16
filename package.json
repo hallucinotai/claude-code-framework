@@ -1,6 +1,6 @@
 {
   "name": "saas-playbook",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Claude Code playbook for building full-stack SaaS applications. Provides guided wizards, agents, and skills for the entire SaaS lifecycle.",
   "bin": {
     "saas-playbook": "bin/cli.js"
@@ -12,7 +12,7 @@
   "files": [
     ".claude/agents",
     ".claude/commands",
-    "skills",
+    ".claude/skills",
     "templates",
     "scripts",
     "CLAUDE.md",

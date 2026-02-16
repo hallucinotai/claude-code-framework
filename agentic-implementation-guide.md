@@ -25,7 +25,7 @@ Three types of tools work together:
 |------|-------------|----------------|
 | **Commands** (28 total) | Guided wizards that scaffold code | You invoke them with `/command-name` |
 | **Agents** (8 total) | Specialized AI experts for complex reasoning | Commands delegate to them automatically |
-| **Skills** (7 total) | Knowledge bases of proven SaaS patterns | Agents reference them for best practices |
+| **Skills** (8 total) | Knowledge bases of proven SaaS patterns | Agents reference them for best practices |
 
 ---
 
@@ -41,7 +41,7 @@ npx saas-playbook init
 This copies the framework files into your project:
 - `.claude/commands/` — 28 slash commands
 - `.claude/agents/` — 8 specialized agents
-- `skills/` — 7 pattern libraries
+- `.claude/skills/` — 8 pattern libraries
 - `scripts/` — Deterministic scaffolding engine
 - `.saas-playbook.yml` — Project configuration
 - `CLAUDE.md` — Project instructions for Claude
@@ -673,6 +673,7 @@ Skills are knowledge bases that agents reference. They contain proven patterns f
 | **db-patterns** | Multi-tenant schemas, row-level security, migration strategies, query optimization |
 | **testing-patterns** | SaaS test strategies, mocking auth/billing, tenant isolation testing |
 | **deployment-patterns** | CI/CD pipelines, containerization, monitoring, zero-downtime deploys |
+| **ui-ux-pro-max** | 50 design styles, 21 color palettes, 50 font pairings, responsive layouts, accessibility |
 
 ---
 

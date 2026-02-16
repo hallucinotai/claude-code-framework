@@ -14,10 +14,11 @@ This is the **SaaS Playbook** framework package. It provides a complete set of c
 ## Package Structure
 
 - `bin/cli.js` — NPM CLI entry point (`npx saas-playbook init`)
-- `.claude/agents/` — Specialized AI agents for different domains
-- `.claude/commands/` — Slash commands for the guided workflow
-- `skills/` — Knowledge base for SaaS patterns and best practices
-- `templates/` — Config file templates
+- `.claude/agents/` — 8 specialized AI agents for different domains
+- `.claude/commands/` — 28 slash commands for the guided workflow
+- `.claude/skills/` — 8 knowledge base skills for SaaS patterns and best practices
+- `templates/` — Handlebars templates for code scaffolding
+- `scripts/` — Deterministic scaffolding engine
 - `CLAUDE.md` — This file (framework-level instructions)
 
 ## Command Lifecycle Pattern

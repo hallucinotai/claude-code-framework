@@ -5,7 +5,6 @@ const path = require("path");
 
 const CONFIG_FILE = ".saas-playbook.yml";
 const CLAUDE_DIR = ".claude";
-const SKILLS_DIR = "skills";
 const SCRIPTS_DIR = "scripts";
 const CLAUDE_MD = "CLAUDE.md";
 
@@ -62,15 +61,7 @@ function main() {
   const destClaude = path.join(targetDir, CLAUDE_DIR);
   if (fs.existsSync(srcClaude)) {
     copyDirRecursive(srcClaude, destClaude, ["settings.local.json"]);
-    console.log("  [+] Copied .claude/ (agents + commands)");
-  }
-
-  // Copy skills directory
-  const srcSkills = path.join(packageRoot, SKILLS_DIR);
-  const destSkills = path.join(targetDir, SKILLS_DIR);
-  if (fs.existsSync(srcSkills)) {
-    copyDirRecursive(srcSkills, destSkills);
-    console.log("  [+] Copied skills/ (knowledge base)");
+    console.log("  [+] Copied .claude/ (agents, commands, skills)");
   }
 
   // Copy scripts directory (scaffolding engine)
