@@ -4,6 +4,9 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactStrictMode: true,
   poweredByHeader: false,
+{{#if isDocker}}
+  output: "standalone",
+{{/if}}
 };
 
 export default nextConfig;

@@ -44,6 +44,25 @@ If the user selects a preset, confirm the choices and allow overrides. If custom
 
 For each choice, briefly explain the trade-offs to help the user decide.
 
+## Step 3.5: Docker Setup
+
+Ask the user:
+
+> **Would you like to dockerize your application?**
+> This sets up a complete local dev environment with Docker Compose including:
+> - **App** — Your Next.js application
+> - **PostgreSQL** — Database
+> - **Redis** — Caching and sessions
+> - **Mailpit** — Local email testing (web UI on :8025, SMTP on :1025)
+>
+> You can always add Docker later with `/deploy-setup --provider=docker`.
+
+Options:
+1. **Yes** — Include Dockerfile, docker-compose.yml, and .dockerignore in the scaffolded project
+2. **No** — Skip Docker setup for now
+
+Store their choice as a boolean (e.g. `dockerize: true/false`).
+
 ## Step 4: SaaS Features Selection
 
 Present the list of available SaaS modules and ask which to enable. Group them clearly:
@@ -85,6 +104,8 @@ Also ask about API style:
 
 Write the `.saas-playbook.yml` file with all the user's choices. Set `progress.initialized: true`.
 
+If the user chose Docker in Step 3.5, also set `deployment.containerized: true` in the config.
+
 ## Step 7: Generate CLAUDE.md
 
 Create or update the project's `CLAUDE.md` file tailored to the chosen stack. Include:
@@ -104,10 +125,13 @@ Run the scaffolding script with the user's choices:
 ```
 node scripts/scaffold.js init-project \
   --name=<project-name> \
-  --description="<project-description>"
+  --description="<project-description>" \
+  --docker=<true|false>
 ```
 
-The script will create all boilerplate files (package.json, tsconfig.json, .eslintrc, tailwind.config, prisma/schema.prisma, app/layout.tsx, app/page.tsx, etc.). Review its output and then:
+Include `--docker=true` if the user chose Docker in Step 3.5.
+
+The script will create all boilerplate files (package.json, tsconfig.json, .eslintrc, tailwind.config, prisma/schema.prisma, app/layout.tsx, app/page.tsx, etc.). When Docker is enabled, it also generates `Dockerfile`, `docker-compose.yml`, and `.dockerignore`. Review its output and then:
 - Verify the generated files match the user's preferences
 - Make any project-specific customizations the templates don't cover
 
@@ -131,6 +155,10 @@ Files created:
   - CLAUDE.md (project instructions)
   - [list of scaffolded files]
 ```
+
+If Docker was enabled, also list the Docker files in the summary (Dockerfile, docker-compose.yml, .dockerignore) and mention:
+- "Run `docker compose up` to start the full dev environment (App + PostgreSQL + Redis + Mailpit)"
+- "Mailpit web UI available at http://localhost:8025"
 
 Suggest next steps based on choices:
 - If architecture not yet designed: "Run `/architect` to design your application architecture"

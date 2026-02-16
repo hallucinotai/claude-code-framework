@@ -8,8 +8,13 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/app
       - NEXTAUTH_SECRET=dev-secret
       - NEXTAUTH_URL=http://localhost:3000
+      - REDIS_URL=redis://redis:6379
+      - EMAIL_SERVER=smtp://localhost:1025
+      - EMAIL_FROM=noreply@localhost
     depends_on:
       db:
+        condition: service_healthy
+      redis:
         condition: service_healthy
 
   db:
@@ -28,6 +33,25 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  mailpit:
+    image: axllent/mailpit
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+
 volumes:
   pgdata:
+  redisdata:
 {{/if}}
