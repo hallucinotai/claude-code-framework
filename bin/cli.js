@@ -97,6 +97,55 @@ function main() {
     console.log("  [+] Created .saas-playbook.yml (project config)");
   }
 
+  // Create .gitignore
+  const destGitignore = path.join(targetDir, ".gitignore");
+  if (!fs.existsSync(destGitignore)) {
+    const gitignoreContent = `# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# Testing
+/coverage
+
+# Next.js
+/.next/
+/out/
+
+# Production
+/build
+
+# Misc
+.DS_Store
+*.pem
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local env files
+.env
+.env*.local
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Prisma
+prisma/dev.db
+prisma/dev.db-journal
+`;
+    fs.writeFileSync(destGitignore, gitignoreContent);
+    console.log("  [+] Created .gitignore");
+  } else {
+    console.log("  [~] .gitignore already exists, skipping");
+  }
+
   // Copy agentic implementation guide
   const srcGuide = path.join(packageRoot, "agentic-implementation-guide.md");
   const destGuide = path.join(targetDir, "agentic-implementation-guide.md");
