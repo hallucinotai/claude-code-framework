@@ -10,12 +10,14 @@
     "js-yaml": "^4.1.0"
   },
   "files": [
-    ".claude",
+    ".claude/agents",
+    ".claude/commands",
     "skills",
     "templates",
     "scripts",
     "CLAUDE.md",
-    "bin"
+    "bin",
+    "agentic-implementation-guide.md"
   ],
   "keywords": [
     "claude-code",
@@ -26,13 +28,13 @@
     "ai-assisted",
     "developer-tools"
   ],
-  "author": "ela-ai <elamurugan.ai@gmail.com>",
+  "author": "hallucinotai <hallucinotai@gmail.com>",
   "license": "MIT",
   "engines": {
     "node": ">=18.0.0"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ela-ai/saas-playbook.git"
+    "url": "git+https://github.com/hallucinotai/claude-code-framework.git"
   }
 }

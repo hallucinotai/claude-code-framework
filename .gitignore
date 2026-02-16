@@ -4,3 +4,5 @@ node_modules/
 .env.local
 *.log
 .mcp.json
+.npmrc
+.claude/settings.local.json

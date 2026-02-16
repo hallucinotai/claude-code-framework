@@ -12,16 +12,17 @@ const CLAUDE_MD = "CLAUDE.md";
 const targetDir = process.cwd();
 const packageRoot = path.resolve(__dirname, "..");
 
-function copyDirRecursive(src, dest) {
+function copyDirRecursive(src, dest, exclude = []) {
   if (!fs.existsSync(dest)) {
     fs.mkdirSync(dest, { recursive: true });
   }
   const entries = fs.readdirSync(src, { withFileTypes: true });
   for (const entry of entries) {
+    if (exclude.includes(entry.name)) continue;
     const srcPath = path.join(src, entry.name);
     const destPath = path.join(dest, entry.name);
     if (entry.isDirectory()) {
-      copyDirRecursive(srcPath, destPath);
+      copyDirRecursive(srcPath, destPath, exclude);
     } else {
       fs.copyFileSync(srcPath, destPath);
     }
@@ -56,11 +57,11 @@ function main() {
 
   console.log("\n  Initializing SaaS Playbook...\n");
 
-  // Copy .claude directory (agents + commands)
+  // Copy .claude directory (agents + commands), excluding local settings
   const srcClaude = path.join(packageRoot, CLAUDE_DIR);
   const destClaude = path.join(targetDir, CLAUDE_DIR);
   if (fs.existsSync(srcClaude)) {
-    copyDirRecursive(srcClaude, destClaude);
+    copyDirRecursive(srcClaude, destClaude, ["settings.local.json"]);
     console.log("  [+] Copied .claude/ (agents + commands)");
   }
 
@@ -80,12 +81,28 @@ function main() {
     console.log("  [+] Copied scripts/ (scaffolding engine)");
   }
 
+  // Copy templates directory (Handlebars templates for scaffolding)
+  const srcTemplates = path.join(packageRoot, "templates");
+  const destTemplates = path.join(targetDir, "templates");
+  if (fs.existsSync(srcTemplates)) {
+    copyDirRecursive(srcTemplates, destTemplates);
+    console.log("  [+] Copied templates/ (scaffolding templates)");
+  }
+
   // Copy config template
   const srcConfig = path.join(packageRoot, "templates", "saas-playbook.yml");
   const destConfig = path.join(targetDir, CONFIG_FILE);
   if (fs.existsSync(srcConfig)) {
     fs.copyFileSync(srcConfig, destConfig);
     console.log("  [+] Created .saas-playbook.yml (project config)");
+  }
+
+  // Copy agentic implementation guide
+  const srcGuide = path.join(packageRoot, "agentic-implementation-guide.md");
+  const destGuide = path.join(targetDir, "agentic-implementation-guide.md");
+  if (fs.existsSync(srcGuide)) {
+    fs.copyFileSync(srcGuide, destGuide);
+    console.log("  [+] Copied agentic-implementation-guide.md");
   }
 
   // Create initial CLAUDE.md
