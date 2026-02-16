@@ -1,0 +1,49 @@
+{{#if hasVariants}}
+import { type VariantProps, cva } from "class-variance-authority";
+
+const {{namePascal}}Variants = cva("", {
+  variants: {
+    variant: {
+{{#each variants}}
+      {{this}}: "",
+{{/each}}
+    },
+  },
+  defaultVariants: {
+    variant: "{{variants.[0]}}",
+  },
+});
+
+interface {{namePascal}}Props
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof {{namePascal}}Variants> {
+{{#each props}}
+  {{this}}: string;
+{{/each}}
+}
+
+export function {{namePascal}}({ variant, className, {{#each props}}{{this}}, {{/each}}...props }: {{namePascal}}Props) {
+  return (
+    <div className={{{namePascal}}Variants({ variant, className })} {...props}>
+      {/* TODO: Implement {{namePascal}} component */}
+    </div>
+  );
+}
+{{else}}
+interface {{namePascal}}Props {
+{{#each props}}
+  {{this}}: string;
+{{/each}}
+  children?: React.ReactNode;
+  className?: string;
+}
+
+export function {{namePascal}}({ {{#each props}}{{this}}, {{/each}}children, className }: {{namePascal}}Props) {
+  return (
+    <div className={className}>
+      {children}
+      {/* TODO: Implement {{namePascal}} component */}
+    </div>
+  );
+}
+{{/if}}

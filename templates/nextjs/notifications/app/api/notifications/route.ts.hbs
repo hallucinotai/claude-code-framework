@@ -1,0 +1,23 @@
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { getNotifications, markAllAsRead } from "@/lib/notifications";
+
+export async function GET(request: Request) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { searchParams } = new URL(request.url);
+  const unreadOnly = searchParams.get("unread") === "true";
+
+  const notifications = await getNotifications(session.user.id, unreadOnly);
+  return NextResponse.json({ notifications });
+}
+
+export async function PATCH() {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  await markAllAsRead(session.user.id);
+  return NextResponse.json({ success: true });
+}

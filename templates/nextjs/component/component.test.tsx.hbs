@@ -1,0 +1,17 @@
+import { describe, it, expect } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { {{namePascal}} } from "./{{nameKebab}}";
+
+describe("{{namePascal}}", () => {
+  it("renders without crashing", () => {
+    render(<{{namePascal}} {{#each props}}{{this}}="test" {{/each}}/>);
+  });
+
+{{#if hasVariants}}
+{{#each variants}}
+  it("renders {{this}} variant", () => {
+    render(<{{../namePascal}} variant="{{this}}" {{#each ../props}}{{this}}="test" {{/each}}/>);
+  });
+{{/each}}
+{{/if}}
+});

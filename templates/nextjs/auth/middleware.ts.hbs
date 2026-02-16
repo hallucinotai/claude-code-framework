@@ -1,0 +1,41 @@
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
+
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // --- SAAS_PLAYBOOK_MIDDLEWARE_START ---
+
+  // Auth check: protect dashboard and API routes
+  const protectedPaths = ["/dashboard", "/settings", "/api/billing", "/api/tenants", "/api/teams"];
+  const isProtected = protectedPaths.some((p) => pathname.startsWith(p));
+
+  if (isProtected) {
+    const token = await getToken({ req: request });
+    if (!token) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("callbackUrl", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+  }
+
+  // Redirect authenticated users away from auth pages
+  const authPages = ["/login", "/signup"];
+  if (authPages.includes(pathname)) {
+    const token = await getToken({ req: request });
+    if (token) {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
+  }
+
+  // --- SAAS_PLAYBOOK_MIDDLEWARE_END ---
+
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|api/auth|api/webhooks).*)",
+  ],
+};

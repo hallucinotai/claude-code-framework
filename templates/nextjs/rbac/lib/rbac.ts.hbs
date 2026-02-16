@@ -1,0 +1,52 @@
+import { prisma } from "@/lib/prisma";
+
+export type Role = {{#each roles}}"{{this}}"{{#unless @last}} | {{/unless}}{{/each}};
+
+export interface Permission {
+  resource: string;
+  action: "create" | "read" | "update" | "delete" | "manage";
+}
+
+/**
+ * Default role permissions matrix.
+ * Customize this to match your access control requirements.
+ */
+export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
+{{#each roles}}
+{{#if (eq this "admin")}}
+  admin: [{ resource: "*", action: "manage" }],
+{{else if (eq this "editor")}}
+  editor: [
+    { resource: "*", action: "read" },
+    { resource: "*", action: "create" },
+    { resource: "*", action: "update" },
+  ],
+{{else if (eq this "viewer")}}
+  viewer: [{ resource: "*", action: "read" }],
+{{else}}
+  {{this}}: [{ resource: "*", action: "read" }],
+{{/if}}
+{{/each}}
+};
+
+export function hasPermission(role: Role, resource: string, action: string): boolean {
+  const permissions = ROLE_PERMISSIONS[role] || [];
+  return permissions.some(
+    (p) =>
+      (p.resource === "*" || p.resource === resource) &&
+      (p.action === "manage" || p.action === action)
+  );
+}
+
+export async function getUserRole(userId: string, tenantId: string): Promise<Role | null> {
+  const member = await prisma.tenantMember.findUnique({
+    where: { tenantId_userId: { tenantId, userId } },
+  });
+  return (member?.role as Role) || null;
+}
+
+export async function checkAccess(userId: string, tenantId: string, resource: string, action: string): Promise<boolean> {
+  const role = await getUserRole(userId, tenantId);
+  if (!role) return false;
+  return hasPermission(role, resource, action);
+}

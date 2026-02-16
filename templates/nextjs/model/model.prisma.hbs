@@ -1,0 +1,20 @@
+model {{namePascal}} {
+  id        String   @id @default(cuid())
+{{#each fields}}
+  {{this.name}}  {{this.prismaType}}{{#if this.isOptional}}?{{/if}}{{#if this.isUnique}}  @unique{{/if}}{{#if this.defaultValue}}  @default({{this.defaultValue}}){{/if}}
+{{/each}}
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([createdAt])
+}
+{{#each fields}}
+{{#if this.enumValues}}
+
+enum {{../namePascal}}{{this.name}}Type {
+{{#each this.enumValues}}
+  {{this}}
+{{/each}}
+}
+{{/if}}
+{{/each}}

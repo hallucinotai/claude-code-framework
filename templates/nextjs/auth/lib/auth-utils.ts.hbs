@@ -1,0 +1,43 @@
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
+
+/**
+ * Get the current authenticated user from the server session.
+ * Returns null if not authenticated.
+ */
+export async function getCurrentUser() {
+  const session = await getServerSession(authOptions);
+  return session?.user ?? null;
+}
+
+/**
+ * Require authentication. Redirects to login if not authenticated.
+ * Use in Server Components and Route Handlers.
+ */
+export async function requireAuth() {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    redirect("/login");
+  }
+  return session.user;
+}
+
+/**
+ * Require a specific role. Throws if user doesn't have the role.
+ */
+export async function requireRole(role: string) {
+  const user = await requireAuth();
+  if ((user as any).role !== role) {
+    throw new Error(`Forbidden: requires role '${role}'`);
+  }
+  return user;
+}
+
+/**
+ * Check if the current user is authenticated (boolean).
+ */
+export async function isAuthenticated(): Promise<boolean> {
+  const session = await getServerSession(authOptions);
+  return !!session?.user;
+}

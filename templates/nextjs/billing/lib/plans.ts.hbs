@@ -1,0 +1,69 @@
+export interface Plan {
+  id: string;
+  name: string;
+  description: string;
+  priceMonthly: number;
+  priceYearly: number;
+  stripePriceIdMonthly: string;
+  stripePriceIdYearly: string;
+  features: string[];
+  limits: Record<string, number>;
+}
+
+export const PLANS: Record<string, Plan> = {
+{{#each planDetails}}
+  {{this.name}}: {
+    id: "{{this.name}}",
+    name: "{{this.displayName}}",
+{{#if (eq this.name "free")}}
+    description: "For individuals getting started",
+    priceMonthly: 0,
+    priceYearly: 0,
+    stripePriceIdMonthly: "",
+    stripePriceIdYearly: "",
+    features: ["Basic features", "Community support", "1 project"],
+    limits: { projects: 1, members: 1, storage: 100 },
+{{else if (eq this.name "pro")}}
+    description: "For growing teams",
+    priceMonthly: 29,
+    priceYearly: 290,
+    stripePriceIdMonthly: process.env.STRIPE_PRO_MONTHLY_PRICE_ID || "",
+    stripePriceIdYearly: process.env.STRIPE_PRO_YEARLY_PRICE_ID || "",
+    features: ["Everything in Free", "Priority support", "10 projects", "Team collaboration"],
+    limits: { projects: 10, members: 5, storage: 1000 },
+{{else if (eq this.name "enterprise")}}
+    description: "For large organizations",
+    priceMonthly: 99,
+    priceYearly: 990,
+    stripePriceIdMonthly: process.env.STRIPE_ENTERPRISE_MONTHLY_PRICE_ID || "",
+    stripePriceIdYearly: process.env.STRIPE_ENTERPRISE_YEARLY_PRICE_ID || "",
+    features: ["Everything in Pro", "Dedicated support", "Unlimited projects", "SSO", "Audit logs"],
+    limits: { projects: -1, members: -1, storage: -1 },
+{{else}}
+    description: "{{this.displayName}} plan",
+    priceMonthly: 0,
+    priceYearly: 0,
+    stripePriceIdMonthly: process.env.STRIPE_{{this.upperName}}_MONTHLY_PRICE_ID || "",
+    stripePriceIdYearly: process.env.STRIPE_{{this.upperName}}_YEARLY_PRICE_ID || "",
+    features: [],
+    limits: {},
+{{/if}}
+  },
+{{/each}}
+};
+
+export function getPlan(planId: string): Plan | undefined {
+  return PLANS[planId];
+}
+
+export function getDefaultPlan(): Plan {
+{{#if hasFreePlan}}
+  return PLANS.free;
+{{else}}
+  return Object.values(PLANS)[0];
+{{/if}}
+}
+
+export function getAllPlans(): Plan[] {
+  return Object.values(PLANS);
+}

@@ -1,0 +1,35 @@
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+
+/**
+ * Tenant resolution middleware.
+ * Import and call this from your main middleware.ts.
+ */
+export function tenantMiddleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+{{#if isSubdomain}}
+  // Extract tenant from subdomain
+  const host = request.headers.get("host") || "";
+  const subdomain = host.split(".")[0];
+  const isMainDomain = !subdomain || subdomain === "www" || subdomain === "app";
+
+  if (!isMainDomain) {
+    // Attach tenant slug to headers for downstream consumption
+    const response = NextResponse.next();
+    response.headers.set("x-tenant-slug", subdomain);
+    return response;
+  }
+{{else}}
+  // Extract tenant from path prefix: /org/[slug]/...
+  const tenantMatch = pathname.match(/^\/org\/([^/]+)/);
+  if (tenantMatch) {
+    const slug = tenantMatch[1];
+    const response = NextResponse.next();
+    response.headers.set("x-tenant-slug", slug);
+    return response;
+  }
+{{/if}}
+
+  return NextResponse.next();
+}

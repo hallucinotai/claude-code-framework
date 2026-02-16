@@ -1,0 +1,16 @@
+/**
+ * Define your analytics events here for type safety.
+ */
+export interface AnalyticsEvents {
+  page_view: { path: string };
+  sign_up: { method: string };
+  sign_in: { method: string };
+  feature_used: { feature: string; action: string };
+  subscription_started: { plan: string };
+  subscription_canceled: { plan: string; reason?: string };
+  onboarding_step_completed: { step: string };
+  onboarding_skipped: { lastStep: string };
+  error_occurred: { code: string; message: string };
+}
+
+export type AnalyticsEvent = keyof AnalyticsEvents;

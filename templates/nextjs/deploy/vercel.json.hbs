@@ -1,0 +1,11 @@
+{{#if isVercel}}
+{
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "env": {
+    "DATABASE_URL": "@database-url",
+    "NEXTAUTH_SECRET": "@nextauth-secret"
+  }
+}
+{{/if}}

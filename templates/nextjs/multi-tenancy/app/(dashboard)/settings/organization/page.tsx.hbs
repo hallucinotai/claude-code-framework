@@ -1,0 +1,69 @@
+import { requireAuth } from "@/lib/auth-utils";
+import { requireTenant } from "@/lib/tenant";
+import { prisma } from "@/lib/prisma";
+
+export default async function OrganizationSettingsPage() {
+  await requireAuth();
+  const tenant = await requireTenant();
+
+  const tenantData = await prisma.tenant.findUnique({
+    where: { id: tenant.tenantId },
+    include: {
+      members: {
+        include: {
+          user: { select: { id: true, name: true, email: true, image: true } },
+        },
+      },
+    },
+  });
+
+  return (
+    <div className="mx-auto max-w-4xl space-y-8 p-6">
+      <div>
+        <h1 className="text-2xl font-bold">{{terminologyPascal}} Settings</h1>
+        <p className="text-gray-600">Manage your {{terminology}} details and members</p>
+      </div>
+
+      <div className="rounded-lg border p-6">
+        <h2 className="text-lg font-semibold">General</h2>
+        <div className="mt-4 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Name</label>
+            <p className="mt-1 text-sm text-gray-900">{tenantData?.name}</p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Slug</label>
+            <p className="mt-1 text-sm text-gray-500">{tenantData?.slug}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-lg border p-6">
+        <h2 className="text-lg font-semibold">Members</h2>
+        <div className="mt-4">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead>
+              <tr>
+                <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">Member</th>
+                <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">Role</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {tenantData?.members.map((member) => (
+                <tr key={member.id}>
+                  <td className="px-4 py-3">
+                    <div>
+                      <p className="text-sm font-medium">{member.user.name}</p>
+                      <p className="text-xs text-gray-500">{member.user.email}</p>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-sm capitalize">{member.role}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}

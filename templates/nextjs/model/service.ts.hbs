@@ -1,0 +1,42 @@
+import { prisma } from "@/lib/prisma";
+import type { {{namePascal}} } from "./{{nameCamel}}.types";
+
+export async function get{{namePluralPascal}}(opts?: {
+  page?: number;
+  pageSize?: number;
+  tenantId?: string;
+}) {
+  const page = opts?.page || 1;
+  const pageSize = opts?.pageSize || 20;
+  const skip = (page - 1) * pageSize;
+
+  const where = opts?.tenantId ? { tenantId: opts.tenantId } : {};
+
+  const [data, total] = await Promise.all([
+    prisma.{{nameCamel}}.findMany({
+      where,
+      skip,
+      take: pageSize,
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.{{nameCamel}}.count({ where }),
+  ]);
+
+  return { data, total, page, pageSize };
+}
+
+export async function get{{namePascal}}ById(id: string) {
+  return prisma.{{nameCamel}}.findUnique({ where: { id } });
+}
+
+export async function create{{namePascal}}(data: Omit<{{namePascal}}, "id" | "createdAt" | "updatedAt">) {
+  return prisma.{{nameCamel}}.create({ data });
+}
+
+export async function update{{namePascal}}(id: string, data: Partial<{{namePascal}}>) {
+  return prisma.{{nameCamel}}.update({ where: { id }, data });
+}
+
+export async function delete{{namePascal}}(id: string) {
+  return prisma.{{nameCamel}}.delete({ where: { id } });
+}

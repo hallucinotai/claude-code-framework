@@ -1,0 +1,77 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+
+interface Tenant {
+  id: string;
+  name: string;
+  slug: string;
+  role: string;
+}
+
+interface TenantSwitcherProps {
+  currentTenantId?: string;
+}
+
+export function TenantSwitcher({ currentTenantId }: TenantSwitcherProps) {
+  const router = useRouter();
+  const [tenants, setTenants] = useState<Tenant[]>([]);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/tenants")
+      .then((res) => res.json())
+      .then((data) => setTenants(data.tenants || []));
+  }, []);
+
+  const currentTenant = tenants.find((t) => t.id === currentTenantId);
+
+  function switchTenant(tenant: Tenant) {
+{{#if isSubdomain}}
+    const host = window.location.host.split(".").slice(1).join(".");
+    window.location.href = `${window.location.protocol}//${tenant.slug}.${host}/dashboard`;
+{{else}}
+    router.push(`/org/${tenant.slug}/dashboard`);
+{{/if}}
+    setOpen(false);
+  }
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-gray-50"
+      >
+        <span className="font-medium">{currentTenant?.name || "Select {{terminology}}"}</span>
+        <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {open && (
+        <div className="absolute left-0 mt-1 w-64 rounded-md border bg-white shadow-lg">
+          <div className="py-1">
+            {tenants.map((tenant) => (
+              <button
+                key={tenant.id}
+                onClick={() => switchTenant(tenant)}
+                className={`flex w-full items-center justify-between px-4 py-2 text-sm hover:bg-gray-100 ${
+                  tenant.id === currentTenantId ? "bg-blue-50 text-blue-600" : "text-gray-700"
+                }`}
+              >
+                <span>{tenant.name}</span>
+                <span className="text-xs text-gray-400">{tenant.role}</span>
+              </button>
+            ))}
+          </div>
+          <div className="border-t px-4 py-2">
+            <a href="/create-organization" className="text-sm text-blue-600 hover:text-blue-500">
+              Create new {{terminology}}
+            </a>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

@@ -1,0 +1,34 @@
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { createCheckoutSession } from "@/lib/billing";
+import { prisma } from "@/lib/prisma";
+
+export async function POST(request: Request) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { priceId, tenantId } = await request.json();
+
+  if (!priceId || !tenantId) {
+    return NextResponse.json({ error: "Missing priceId or tenantId" }, { status: 400 });
+  }
+
+  // Check for existing Stripe customer
+  const existingSub = await prisma.subscription.findFirst({
+    where: { tenantId },
+    select: { stripeCustomerId: true },
+  });
+
+  const checkoutSession = await createCheckoutSession({
+    priceId,
+    customerId: existingSub?.stripeCustomerId || undefined,
+    tenantId,
+    successUrl: `${process.env.NEXTAUTH_URL}/dashboard/billing?success=true`,
+    cancelUrl: `${process.env.NEXTAUTH_URL}/pricing`,
+  });
+
+  return NextResponse.json({ url: checkoutSession.url });
+}

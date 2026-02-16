@@ -1,0 +1,28 @@
+let counter = 0;
+
+export function buildUser(overrides: Partial<any> = {}) {
+  counter++;
+  return {
+    id: `user-${counter}`,
+    name: `Test User ${counter}`,
+    email: `user${counter}@example.com`,
+    image: null,
+    role: "user",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...overrides,
+  };
+}
+
+export function buildTenant(overrides: Partial<any> = {}) {
+  counter++;
+  return {
+    id: `tenant-${counter}`,
+    name: `Test Tenant ${counter}`,
+    slug: `test-tenant-${counter}`,
+    plan: "free",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...overrides,
+  };
+}

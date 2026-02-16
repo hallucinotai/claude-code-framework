@@ -1,0 +1,24 @@
+/**
+ * Seed script for RBAC roles and permissions.
+ * Run: npx ts-node lib/seed-roles.ts
+ */
+import { ROLE_PERMISSIONS, type Role } from "./rbac";
+
+export function getRoleDescriptions(): Record<Role, string> {
+  return {
+{{#each roles}}
+{{#if (eq this "admin")}}
+    admin: "Full access to all resources and settings",
+{{else if (eq this "editor")}}
+    editor: "Can create, read, and edit resources but not delete",
+{{else if (eq this "viewer")}}
+    viewer: "Read-only access to resources",
+{{else}}
+    {{this}}: "Custom role — configure permissions in lib/rbac.ts",
+{{/if}}
+{{/each}}
+  };
+}
+
+console.log("Available roles:", Object.keys(ROLE_PERMISSIONS));
+console.log("Role descriptions:", getRoleDescriptions());

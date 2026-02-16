@@ -1,0 +1,23 @@
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+
+/**
+ * Billing middleware: checks subscription status.
+ * Import and call this from your main middleware.ts.
+ */
+export async function billingMiddleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // Paths that require an active subscription
+  const paidPaths = ["/dashboard"];
+  const isPaidPath = paidPaths.some((p) => pathname.startsWith(p));
+
+  if (!isPaidPath) {
+    return NextResponse.next();
+  }
+
+  // TODO: Check subscription status from session/token
+  // Redirect to billing page if subscription is expired or past_due
+
+  return NextResponse.next();
+}

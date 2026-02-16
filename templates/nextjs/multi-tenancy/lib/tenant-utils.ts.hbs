@@ -1,0 +1,59 @@
+import { prisma } from "@/lib/prisma";
+
+/**
+ * Create a new tenant with an owner membership.
+ */
+export async function createTenant({
+  name,
+  slug,
+  ownerId,
+}: {
+  name: string;
+  slug: string;
+  ownerId: string;
+}) {
+  return prisma.tenant.create({
+    data: {
+      name,
+      slug,
+      members: {
+        create: {
+          userId: ownerId,
+          role: "owner",
+        },
+      },
+    },
+    include: { members: true },
+  });
+}
+
+/**
+ * Get all tenants for a user.
+ */
+export async function getTenantsForUser(userId: string) {
+  const memberships = await prisma.tenantMember.findMany({
+    where: { userId },
+    include: { tenant: true },
+  });
+  return memberships.map((m) => ({
+    ...m.tenant,
+    role: m.role,
+  }));
+}
+
+/**
+ * Check if a user is a member of a tenant.
+ */
+export async function isTenantMember(tenantId: string, userId: string) {
+  const member = await prisma.tenantMember.findUnique({
+    where: { tenantId_userId: { tenantId, userId } },
+  });
+  return !!member;
+}
+
+/**
+ * Create a Prisma query filter scoped to a tenant.
+ */
+export function tenantScope(tenantId: string) {
+  return { tenantId };
+}

@@ -1,0 +1,16 @@
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { completeStep } from "@/lib/onboarding";
+
+export async function POST(request: Request) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { searchParams } = new URL(request.url);
+  const step = searchParams.get("step");
+  if (!step) return NextResponse.json({ error: "Missing step" }, { status: 400 });
+
+  const progress = await completeStep(session.user.id, step);
+  return NextResponse.json({ progress });
+}

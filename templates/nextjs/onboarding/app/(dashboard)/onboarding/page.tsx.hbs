@@ -1,0 +1,91 @@
+import { requireAuth } from "@/lib/auth-utils";
+import { getOnboardingProgress, ONBOARDING_STEPS } from "@/lib/onboarding";
+import { redirect } from "next/navigation";
+
+export default async function OnboardingPage() {
+  const user = await requireAuth();
+  const progress = await getOnboardingProgress(user.id);
+
+  if (progress.isComplete) {
+    redirect("/dashboard");
+  }
+
+  const currentStepIndex = ONBOARDING_STEPS.findIndex((s) => s.id === progress.currentStep);
+
+  return (
+    <div className="mx-auto max-w-2xl px-4 py-16">
+      <div className="text-center">
+        <h1 className="text-3xl font-bold">Welcome! Let&apos;s get you set up</h1>
+        <p className="mt-2 text-gray-600">
+          Step {currentStepIndex + 1} of {ONBOARDING_STEPS.length}
+        </p>
+      </div>
+
+      {/* Progress bar */}
+      <div className="mt-8 flex gap-2">
+        {ONBOARDING_STEPS.map((step, i) => (
+          <div
+            key={step.id}
+            className={`h-2 flex-1 rounded-full ${
+              progress.completedSteps.includes(step.id)
+                ? "bg-green-500"
+                : i === currentStepIndex
+                ? "bg-blue-500"
+                : "bg-gray-200"
+            }`}
+          />
+        ))}
+      </div>
+
+{{#if checklist}}
+      {/* Checklist */}
+      <div className="mt-8 space-y-3">
+        {ONBOARDING_STEPS.map((step) => (
+          <div
+            key={step.id}
+            className={`flex items-center gap-3 rounded-lg border p-4 ${
+              progress.completedSteps.includes(step.id) ? "border-green-200 bg-green-50" : ""
+            }`}
+          >
+            <div className={`flex h-6 w-6 items-center justify-center rounded-full ${
+              progress.completedSteps.includes(step.id)
+                ? "bg-green-500 text-white"
+                : "border-2 border-gray-300"
+            }`}>
+              {progress.completedSteps.includes(step.id) && (
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              )}
+            </div>
+            <span className="text-sm font-medium">{step.title}</span>
+          </div>
+        ))}
+      </div>
+{{/if}}
+
+      <div className="mt-8 rounded-lg border p-6">
+        <p className="text-center text-gray-500">
+          Step content for &quot;{progress.currentStep}&quot; goes here.
+        </p>
+        {/* TODO: Render step-specific content */}
+      </div>
+
+      <div className="mt-6 flex justify-between">
+        <form action="/api/onboarding/skip" method="POST">
+          <button type="submit" className="text-sm text-gray-500 hover:text-gray-700">
+            Skip for now
+          </button>
+        </form>
+        <form action={`/api/onboarding/complete?step=${progress.currentStep}`} method="POST">
+          <button
+            type="submit"
+            className="rounded-md bg-blue-600 px-6 py-2 text-sm font-medium text-white hover:bg-blue-700"
+          >
+            {currentStepIndex === ONBOARDING_STEPS.length - 1 ? "Finish" : "Continue"}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}

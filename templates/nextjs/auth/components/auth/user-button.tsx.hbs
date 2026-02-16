@@ -1,0 +1,62 @@
+"use client";
+
+import { useSession, signOut } from "next-auth/react";
+import { useState } from "react";
+
+export function UserButton() {
+  const { data: session } = useSession();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  if (!session?.user) return null;
+
+  const initials = (session.user.name || session.user.email || "U")
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setMenuOpen(!menuOpen)}
+        className="flex items-center gap-2 rounded-full bg-gray-100 p-1 hover:bg-gray-200"
+      >
+        {session.user.image ? (
+          <img
+            src={session.user.image}
+            alt=""
+            className="h-8 w-8 rounded-full"
+          />
+        ) : (
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-xs font-medium text-white">
+            {initials}
+          </div>
+        )}
+      </button>
+
+      {menuOpen && (
+        <div className="absolute right-0 mt-2 w-56 rounded-md border bg-white shadow-lg">
+          <div className="border-b px-4 py-3">
+            <p className="text-sm font-medium">{session.user.name}</p>
+            <p className="text-xs text-gray-500">{session.user.email}</p>
+          </div>
+          <div className="py-1">
+            <a
+              href="/settings"
+              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            >
+              Settings
+            </a>
+            <button
+              onClick={() => signOut({ callbackUrl: "/" })}
+              className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+            >
+              Sign out
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

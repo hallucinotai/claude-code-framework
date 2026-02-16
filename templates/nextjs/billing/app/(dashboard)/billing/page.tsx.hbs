@@ -1,0 +1,91 @@
+import { redirect } from "next/navigation";
+import { requireAuth } from "@/lib/auth-utils";
+import { prisma } from "@/lib/prisma";
+import { getPlan, getAllPlans } from "@/lib/plans";
+import { PlanBadge } from "@/components/billing/plan-badge";
+
+export default async function BillingPage() {
+  const user = await requireAuth();
+
+  // TODO: Get tenantId from user context
+  const tenantId = (user as any).tenantId;
+
+  const subscription = await prisma.subscription.findFirst({
+    where: { tenantId, status: { in: ["active", "trialing"] } },
+    orderBy: { createdAt: "desc" },
+  });
+
+  const currentPlan = subscription ? getPlan(subscription.plan) : getPlan("free");
+
+  return (
+    <div className="mx-auto max-w-4xl space-y-8 p-6">
+      <div>
+        <h1 className="text-2xl font-bold">Billing & Subscription</h1>
+        <p className="text-gray-600">Manage your subscription and billing details</p>
+      </div>
+
+      <div className="rounded-lg border p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-semibold">Current Plan</h2>
+            <div className="mt-1 flex items-center gap-2">
+              <PlanBadge plan={currentPlan?.name || "Free"} />
+              {subscription?.status === "trialing" && (
+                <span className="text-sm text-yellow-600">Trial</span>
+              )}
+            </div>
+          </div>
+          <div className="text-right">
+            {currentPlan && currentPlan.priceMonthly > 0 && (
+              <p className="text-2xl font-bold">${currentPlan.priceMonthly}/mo</p>
+            )}
+          </div>
+        </div>
+
+        {subscription?.currentPeriodEnd && (
+          <p className="mt-4 text-sm text-gray-500">
+            {subscription.cancelAtPeriodEnd
+              ? `Your subscription will end on ${new Date(subscription.currentPeriodEnd).toLocaleDateString()}`
+              : `Next billing date: ${new Date(subscription.currentPeriodEnd).toLocaleDateString()}`}
+          </p>
+        )}
+
+        <div className="mt-6 flex gap-3">
+          <a
+            href="/pricing"
+            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+          >
+            {subscription ? "Change Plan" : "Upgrade"}
+          </a>
+          {subscription?.stripeCustomerId && (
+            <form action="/api/billing/portal" method="POST">
+              <input type="hidden" name="tenantId" value={tenantId} />
+              <button
+                type="submit"
+                className="rounded-md border px-4 py-2 text-sm font-medium hover:bg-gray-50"
+              >
+                Manage Billing
+              </button>
+            </form>
+          )}
+        </div>
+      </div>
+
+      {currentPlan && (
+        <div className="rounded-lg border p-6">
+          <h2 className="text-lg font-semibold">Plan Features</h2>
+          <ul className="mt-4 space-y-2">
+            {currentPlan.features.map((feature) => (
+              <li key={feature} className="flex items-center gap-2 text-sm">
+                <svg className="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                {feature}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}

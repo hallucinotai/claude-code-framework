@@ -1,0 +1,63 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
+
+export default function VerifyEmailPage() {
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
+  const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
+
+  useEffect(() => {
+    if (!token) {
+      setStatus("error");
+      return;
+    }
+    fetch("/api/auth/verify-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token }),
+    })
+      .then((res) => {
+        setStatus(res.ok ? "success" : "error");
+      })
+      .catch(() => setStatus("error"));
+  }, [token]);
+
+  return (
+    <div className="flex min-h-screen items-center justify-center px-4">
+      <div className="w-full max-w-md space-y-4 text-center">
+        {status === "loading" && (
+          <>
+            <h1 className="text-2xl font-bold">Verifying your email...</h1>
+            <p className="text-gray-600">Please wait while we verify your email address.</p>
+          </>
+        )}
+        {status === "success" && (
+          <>
+            <h1 className="text-2xl font-bold text-green-600">Email verified!</h1>
+            <p className="text-gray-600">Your email has been verified successfully.</p>
+            <Link
+              href="/login"
+              className="inline-block rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+            >
+              Sign in
+            </Link>
+          </>
+        )}
+        {status === "error" && (
+          <>
+            <h1 className="text-2xl font-bold text-red-600">Verification failed</h1>
+            <p className="text-gray-600">
+              The verification link is invalid or has expired.
+            </p>
+            <Link href="/login" className="text-sm text-blue-600 hover:text-blue-500">
+              Back to sign in
+            </Link>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,100 @@
+"use client";
+
+import type { Plan } from "@/lib/plans";
+
+interface PricingCardProps {
+  plan: Plan;
+  billingInterval: "monthly" | "yearly";
+  isPopular?: boolean;
+  isCurrentPlan?: boolean;
+}
+
+export function PricingCard({
+  plan,
+  billingInterval,
+  isPopular,
+  isCurrentPlan,
+}: PricingCardProps) {
+  const price =
+    billingInterval === "monthly" ? plan.priceMonthly : plan.priceYearly;
+  const priceId =
+    billingInterval === "monthly"
+      ? plan.stripePriceIdMonthly
+      : plan.stripePriceIdYearly;
+
+  async function handleSubscribe() {
+    if (price === 0) return;
+    const res = await fetch("/api/billing/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ priceId, tenantId: "" }), // TODO: Pass actual tenantId
+    });
+    const data = await res.json();
+    if (data.url) {
+      window.location.href = data.url;
+    }
+  }
+
+  return (
+    <div
+      className={`relative rounded-xl border p-8 ${
+        isPopular ? "border-blue-600 shadow-lg" : "border-gray-200"
+      }`}
+    >
+      {isPopular && (
+        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-blue-600 px-3 py-1 text-xs font-medium text-white">
+          Most Popular
+        </span>
+      )}
+
+      <h3 className="text-lg font-semibold">{plan.name}</h3>
+      <p className="mt-1 text-sm text-gray-500">{plan.description}</p>
+
+      <div className="mt-4">
+        <span className="text-4xl font-bold">
+          {price === 0 ? "Free" : `$${price}`}
+        </span>
+        {price > 0 && (
+          <span className="text-gray-500">
+            /{billingInterval === "monthly" ? "mo" : "yr"}
+          </span>
+        )}
+      </div>
+
+      <ul className="mt-6 space-y-3">
+        {plan.features.map((feature) => (
+          <li key={feature} className="flex items-start gap-2 text-sm">
+            <svg
+              className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+            {feature}
+          </li>
+        ))}
+      </ul>
+
+      <button
+        onClick={handleSubscribe}
+        disabled={isCurrentPlan}
+        className={`mt-8 w-full rounded-md px-4 py-2 text-sm font-medium ${
+          isCurrentPlan
+            ? "border bg-gray-100 text-gray-400"
+            : isPopular
+            ? "bg-blue-600 text-white hover:bg-blue-700"
+            : "border bg-white text-gray-700 hover:bg-gray-50"
+        }`}
+      >
+        {isCurrentPlan ? "Current Plan" : price === 0 ? "Get Started" : "Subscribe"}
+      </button>
+    </div>
+  );
+}

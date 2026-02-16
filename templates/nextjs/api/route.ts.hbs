@@ -1,0 +1,55 @@
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+
+{{#if hasGet}}
+export async function GET(request: Request) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // TODO: Implement GET handler for {{resourceName}}
+  return NextResponse.json({ data: [] });
+}
+{{/if}}
+
+{{#if hasPost}}
+export async function POST(request: Request) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const body = await request.json();
+
+  // TODO: Validate body and create {{resourceName}}
+  return NextResponse.json({ data: body }, { status: 201 });
+}
+{{/if}}
+
+{{#if hasPatch}}
+export async function PATCH(request: Request) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const body = await request.json();
+
+  // TODO: Validate and update {{resourceName}}
+  return NextResponse.json({ data: body });
+}
+{{/if}}
+
+{{#if hasDelete}}
+export async function DELETE(request: Request) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // TODO: Delete {{resourceName}}
+  return NextResponse.json({ success: true });
+}
+{{/if}}

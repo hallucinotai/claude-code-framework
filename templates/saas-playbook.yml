@@ -1,0 +1,69 @@
+project:
+  name: ""
+  description: ""
+  version: "0.1.0"
+
+stack:
+  frontend: ""
+  backend: ""
+  database: ""
+  orm: ""
+  auth: ""
+  billing: ""
+  css: ""
+  testing:
+    unit: ""
+    e2e: ""
+  hosting: ""
+  package-manager: ""
+  language: ""
+  custom: {}
+
+features:
+  auth:
+    enabled: false
+    providers: []
+    strategy: ""
+  billing:
+    enabled: false
+    provider: ""
+    plans: []
+    trial: false
+  multi-tenancy:
+    enabled: false
+    strategy: ""
+  teams:
+    enabled: false
+    roles: []
+  rbac:
+    enabled: false
+    model: ""
+  notifications:
+    enabled: false
+    channels: []
+  onboarding:
+    enabled: false
+    steps: []
+  analytics:
+    enabled: false
+    provider: ""
+
+architecture:
+  pattern: ""
+  api-style: ""
+
+deployment:
+  provider: ""
+  ci: ""
+  containerized: false
+  environments: []
+
+progress:
+  initialized: false
+  architecture-designed: false
+  project-scaffolded: false
+  features: {}
+  tests-setup: false
+  ci-setup: false
+  deploy-setup: false
+  monitoring-setup: false

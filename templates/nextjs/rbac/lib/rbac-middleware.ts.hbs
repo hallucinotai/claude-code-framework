@@ -1,0 +1,41 @@
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { checkAccess } from "./rbac";
+
+/**
+ * Middleware helper to enforce RBAC in API routes.
+ * Usage: await requirePermission("projects", "create");
+ */
+export async function requirePermission(resource: string, action: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    throw new Error("Unauthorized");
+  }
+
+  const tenantId = (session.user as any).tenantId;
+  if (!tenantId) {
+    throw new Error("No tenant context");
+  }
+
+  const allowed = await checkAccess(session.user.id, tenantId, resource, action);
+  if (!allowed) {
+    throw new Error(`Forbidden: cannot ${action} ${resource}`);
+  }
+
+  return session.user;
+}
+
+/**
+ * Higher-order function for protected API routes.
+ */
+export function withPermission(resource: string, action: string) {
+  return async function (handler: Function, request: Request) {
+    try {
+      await requirePermission(resource, action);
+      return handler(request);
+    } catch (error: any) {
+      const status = error.message === "Unauthorized" ? 401 : 403;
+      return Response.json({ error: error.message }, { status });
+    }
+  };
+}

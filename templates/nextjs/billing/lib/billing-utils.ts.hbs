@@ -1,0 +1,46 @@
+import { prisma } from "@/lib/prisma";
+import { getPlan, getDefaultPlan } from "./plans";
+import type { Plan } from "./plans";
+
+export async function getPlanForTenant(tenantId: string): Promise<Plan> {
+  const subscription = await prisma.subscription.findFirst({
+    where: { tenantId, status: { in: ["active", "trialing"] } },
+    orderBy: { createdAt: "desc" },
+  });
+
+  if (!subscription) {
+    return getDefaultPlan();
+  }
+
+  return getPlan(subscription.plan) || getDefaultPlan();
+}
+
+export async function canAccessFeature(tenantId: string, feature: string): Promise<boolean> {
+  const plan = await getPlanForTenant(tenantId);
+  return plan.features.includes(feature);
+}
+
+export async function checkUsageLimit(
+  tenantId: string,
+  resource: string,
+  currentUsage: number
+): Promise<{ allowed: boolean; limit: number; current: number }> {
+  const plan = await getPlanForTenant(tenantId);
+  const limit = plan.limits[resource];
+
+  if (limit === undefined || limit === -1) {
+    return { allowed: true, limit: -1, current: currentUsage };
+  }
+
+  return { allowed: currentUsage < limit, limit, current: currentUsage };
+}
+
+export function isTrialing(subscription: { status: string; trialEnd: Date | null }): boolean {
+  if (subscription.status !== "trialing") return false;
+  if (!subscription.trialEnd) return false;
+  return new Date() < subscription.trialEnd;
+}
+
+export function isActive(subscription: { status: string }): boolean {
+  return ["active", "trialing"].includes(subscription.status);
+}

@@ -1,0 +1,38 @@
+{
+  "name": "saas-playbook",
+  "version": "1.0.0",
+  "description": "Claude Code playbook for building full-stack SaaS applications. Provides guided wizards, agents, and skills for the entire SaaS lifecycle.",
+  "bin": {
+    "saas-playbook": "bin/cli.js"
+  },
+  "dependencies": {
+    "handlebars": "^4.7.8",
+    "js-yaml": "^4.1.0"
+  },
+  "files": [
+    ".claude",
+    "skills",
+    "templates",
+    "scripts",
+    "CLAUDE.md",
+    "bin"
+  ],
+  "keywords": [
+    "claude-code",
+    "saas",
+    "playbook",
+    "scaffolding",
+    "full-stack",
+    "ai-assisted",
+    "developer-tools"
+  ],
+  "author": "ela-ai <elamurugan.ai@gmail.com>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ela-ai/saas-playbook.git"
+  }
+}

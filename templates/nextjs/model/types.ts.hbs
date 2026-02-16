@@ -1,0 +1,22 @@
+export interface {{namePascal}} {
+  id: string;
+{{#each fields}}
+  {{this.name}}: {{#if this.enumValues}}{{../namePascal}}{{this.name}}Type{{else if (eq this.prismaType "String")}}string{{else if (eq this.prismaType "Int")}}number{{else if (eq this.prismaType "Float")}}number{{else if (eq this.prismaType "Boolean")}}boolean{{else if (eq this.prismaType "DateTime")}}Date{{else if (eq this.prismaType "Json")}}Record<string, any>{{else}}string{{/if}}{{#if this.isOptional}} | null{{/if}};
+{{/each}}
+  createdAt: Date;
+  updatedAt: Date;
+}
+{{#each fields}}
+{{#if this.enumValues}}
+
+export type {{../namePascal}}{{this.name}}Type = {{#each this.enumValues}}"{{this}}"{{#unless @last}} | {{/unless}}{{/each}};
+{{/if}}
+{{/each}}
+
+export interface Create{{namePascal}}Input {
+{{#each fields}}
+{{#unless this.defaultValue}}
+  {{this.name}}{{#if this.isOptional}}?{{/if}}: {{#if this.enumValues}}{{../namePascal}}{{this.name}}Type{{else if (eq this.prismaType "String")}}string{{else if (eq this.prismaType "Int")}}number{{else if (eq this.prismaType "Float")}}number{{else if (eq this.prismaType "Boolean")}}boolean{{else if (eq this.prismaType "DateTime")}}Date{{else if (eq this.prismaType "Json")}}Record<string, any>{{else}}string{{/if}};
+{{/unless}}
+{{/each}}
+}

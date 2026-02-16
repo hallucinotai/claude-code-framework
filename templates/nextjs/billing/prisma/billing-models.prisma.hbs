@@ -1,0 +1,32 @@
+model Subscription {
+  id                   String    @id @default(cuid())
+  tenantId             String
+  stripeCustomerId     String
+  stripeSubscriptionId String    @unique
+  stripePriceId        String?
+  plan                 String
+  status               String    // active, trialing, past_due, canceled, unpaid
+  currentPeriodStart   DateTime?
+  currentPeriodEnd     DateTime?
+  cancelAtPeriodEnd    Boolean   @default(false)
+{{#if hasTrial}}
+  trialEnd             DateTime?
+{{/if}}
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  @@index([tenantId])
+}
+
+model Invoice {
+  id              String    @id @default(cuid())
+  tenantId        String
+  stripeInvoiceId String    @unique
+  amount          Int
+  status          String    // paid, open, void, uncollectible
+  paidAt          DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([tenantId])
+}

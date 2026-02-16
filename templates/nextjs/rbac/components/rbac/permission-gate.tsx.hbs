@@ -1,0 +1,25 @@
+"use client";
+
+import { useSession } from "next-auth/react";
+import { hasPermission, type Role } from "@/lib/rbac";
+
+interface PermissionGateProps {
+  resource: string;
+  action: string;
+  children: React.ReactNode;
+  fallback?: React.ReactNode;
+}
+
+/**
+ * Client component that conditionally renders children based on user permissions.
+ */
+export function PermissionGate({ resource, action, children, fallback = null }: PermissionGateProps) {
+  const { data: session } = useSession();
+  const role = (session?.user as any)?.role as Role;
+
+  if (!role || !hasPermission(role, resource, action)) {
+    return <>{fallback}</>;
+  }
+
+  return <>{children}</>;
+}

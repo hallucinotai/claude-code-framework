@@ -1,0 +1,35 @@
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { createTenant, getTenantsForUser } from "@/lib/tenant-utils";
+
+export async function GET() {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const tenants = await getTenantsForUser(session.user.id);
+  return NextResponse.json({ tenants });
+}
+
+export async function POST(request: Request) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { name, slug } = await request.json();
+
+  if (!name || !slug) {
+    return NextResponse.json({ error: "Name and slug are required" }, { status: 400 });
+  }
+
+  const tenant = await createTenant({
+    name,
+    slug: slug.toLowerCase().replace(/[^a-z0-9-]/g, "-"),
+    ownerId: session.user.id,
+  });
+
+  return NextResponse.json({ tenant }, { status: 201 });
+}

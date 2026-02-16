@@ -1,0 +1,25 @@
+import { prisma } from "@/lib/prisma";
+
+/**
+ * Clean all database tables. Use in beforeEach for test isolation.
+ */
+export async function cleanDatabase() {
+  const tablenames = await prisma.$queryRaw<
+    Array<{ tablename: string }>
+  >`SELECT tablename FROM pg_tables WHERE schemaname='public'`;
+
+  const tables = tablenames
+    .map(({ tablename }) => tablename)
+    .filter((name) => name !== "_prisma_migrations");
+
+  for (const table of tables) {
+    await prisma.$executeRawUnsafe(`TRUNCATE TABLE "${table}" CASCADE;`);
+  }
+}
+
+/**
+ * Disconnect Prisma after all tests.
+ */
+export async function disconnectDatabase() {
+  await prisma.$disconnect();
+}

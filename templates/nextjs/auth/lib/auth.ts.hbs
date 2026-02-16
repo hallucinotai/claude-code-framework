@@ -1,0 +1,117 @@
+import { NextAuthOptions } from 'next-auth';
+import { PrismaAdapter } from '@next-auth/prisma-adapter';
+import { prisma } from './prisma';
+{{#if hasSSO}}
+{{#each providers}}
+{{#if (eq this "google")}}
+import GoogleProvider from 'next-auth/providers/google';
+{{/if}}
+{{#if (eq this "github")}}
+import GitHubProvider from 'next-auth/providers/github';
+{{/if}}
+{{/each}}
+{{/if}}
+{{#if hasCredentials}}
+import CredentialsProvider from 'next-auth/providers/credentials';
+import { compare } from 'bcryptjs';
+{{/if}}
+
+export const authOptions: NextAuthOptions = {
+  adapter: PrismaAdapter(prisma),
+  session: {
+    strategy: '{{strategy}}',
+  },
+  pages: {
+    signIn: '/login',
+    signOut: '/login',
+    error: '/login',
+    verifyRequest: '/verify-email',
+  },
+  providers: [
+    {{#each providers}}
+    {{#if (eq this "google")}}
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+    {{/if}}
+    {{#if (eq this "github")}}
+    GitHubProvider({
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+    }),
+    {{/if}}
+    {{#if (eq this "credentials")}}
+    CredentialsProvider({
+      name: 'credentials',
+      credentials: {
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error('Invalid credentials');
+        }
+
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email },
+        });
+
+        if (!user || !user.password) {
+          throw new Error('Invalid credentials');
+        }
+
+        const isPasswordValid = await compare(credentials.password, user.password);
+
+        if (!isPasswordValid) {
+          throw new Error('Invalid credentials');
+        }
+
+        {{#if ../hasEmailVerification}}
+        if (!user.emailVerified) {
+          throw new Error('Please verify your email before logging in');
+        }
+        {{/if}}
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+        };
+      },
+    }),
+    {{/if}}
+    {{/each}}
+  ],
+  callbacks: {
+    async session({ session, token{{#if (eq strategy "database")}}, user{{/if}} }) {
+      if (token) {
+        session.user.id = token.id as string;
+        session.user.role = token.role as string;
+      }
+      {{#if (eq strategy "database")}}
+      if (user) {
+        session.user.id = user.id;
+        session.user.role = user.role;
+      }
+      {{/if}}
+      return session;
+    },
+    {{#if (eq strategy "jwt")}}
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
+      }
+      return token;
+    },
+    {{/if}}
+  },
+  events: {
+    async createUser({ user }) {
+      // Send welcome email or perform post-registration actions
+      console.log('New user created:', user.email);
+    },
+  },
+};

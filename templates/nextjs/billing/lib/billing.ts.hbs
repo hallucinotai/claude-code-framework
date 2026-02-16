@@ -1,0 +1,54 @@
+import Stripe from "stripe";
+
+export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: "2024-06-20",
+  typescript: true,
+});
+
+export async function createCheckoutSession({
+  priceId,
+  customerId,
+  tenantId,
+  successUrl,
+  cancelUrl,
+}: {
+  priceId: string;
+  customerId?: string;
+  tenantId: string;
+  successUrl: string;
+  cancelUrl: string;
+}) {
+  const session = await stripe.checkout.sessions.create({
+    mode: "subscription",
+    payment_method_types: ["card"],
+    line_items: [{ price: priceId, quantity: 1 }],
+    ...(customerId ? { customer: customerId } : { customer_creation: "always" }),
+    success_url: successUrl,
+    cancel_url: cancelUrl,
+    metadata: { tenantId },
+{{#if hasTrial}}
+    subscription_data: {
+      trial_period_days: {{trialDays}},
+      metadata: { tenantId },
+    },
+{{else}}
+    subscription_data: {
+      metadata: { tenantId },
+    },
+{{/if}}
+  });
+
+  return session;
+}
+
+export async function createPortalSession(customerId: string, returnUrl: string) {
+  const session = await stripe.billingPortal.sessions.create({
+    customer: customerId,
+    return_url: returnUrl,
+  });
+  return session;
+}
+
+export async function getSubscription(subscriptionId: string) {
+  return stripe.subscriptions.retrieve(subscriptionId);
+}

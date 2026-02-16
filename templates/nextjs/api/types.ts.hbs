@@ -1,0 +1,21 @@
+export interface {{resourceNamePascal}} {
+  id: string;
+  // TODO: Define {{resourceName}} fields
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Create{{resourceNamePascal}}Input {
+  // TODO: Define creation fields
+}
+
+export interface Update{{resourceNamePascal}}Input {
+  // TODO: Define update fields
+}
+
+export interface {{resourceNamePascal}}ListResponse {
+  data: {{resourceNamePascal}}[];
+  total: number;
+  page: number;
+  pageSize: number;
+}

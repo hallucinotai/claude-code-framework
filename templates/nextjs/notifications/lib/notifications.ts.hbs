@@ -1,0 +1,95 @@
+import { prisma } from "@/lib/prisma";
+
+export type NotificationChannel = {{#each channels}}"{{this}}"{{#unless @last}} | {{/unless}}{{/each}};
+
+export interface NotificationPayload {
+  userId: string;
+  title: string;
+  body: string;
+  channel?: NotificationChannel;
+  data?: Record<string, any>;
+}
+
+export async function sendNotification(payload: NotificationPayload) {
+  const channel = payload.channel || "in-app";
+
+  // Store in database
+  const notification = await prisma.notification.create({
+    data: {
+      userId: payload.userId,
+      title: payload.title,
+      body: payload.body,
+      channel,
+      data: payload.data || {},
+    },
+  });
+
+  // Dispatch to channel
+  switch (channel) {
+{{#if hasEmail}}
+    case "email":
+      await sendEmailNotification(payload);
+      break;
+{{/if}}
+{{#if hasInApp}}
+    case "in-app":
+      // Already stored in DB, client polls or uses realtime
+      break;
+{{/if}}
+{{#if hasPush}}
+    case "push":
+      await sendPushNotification(payload);
+      break;
+{{/if}}
+{{#if hasWebhook}}
+    case "webhook":
+      await sendWebhookNotification(payload);
+      break;
+{{/if}}
+  }
+
+  return notification;
+}
+
+{{#if hasEmail}}
+async function sendEmailNotification(payload: NotificationPayload) {
+  // TODO: Implement with {{emailProvider}}
+  console.log("Sending email notification:", payload.title);
+}
+{{/if}}
+
+{{#if hasPush}}
+async function sendPushNotification(payload: NotificationPayload) {
+  // TODO: Implement push notification
+  console.log("Sending push notification:", payload.title);
+}
+{{/if}}
+
+{{#if hasWebhook}}
+async function sendWebhookNotification(payload: NotificationPayload) {
+  // TODO: Implement webhook notification
+  console.log("Sending webhook notification:", payload.title);
+}
+{{/if}}
+
+export async function getNotifications(userId: string, unreadOnly = false) {
+  return prisma.notification.findMany({
+    where: { userId, ...(unreadOnly ? { readAt: null } : {}) },
+    orderBy: { createdAt: "desc" },
+    take: 50,
+  });
+}
+
+export async function markAsRead(notificationId: string) {
+  return prisma.notification.update({
+    where: { id: notificationId },
+    data: { readAt: new Date() },
+  });
+}
+
+export async function markAllAsRead(userId: string) {
+  return prisma.notification.updateMany({
+    where: { userId, readAt: null },
+    data: { readAt: new Date() },
+  });
+}

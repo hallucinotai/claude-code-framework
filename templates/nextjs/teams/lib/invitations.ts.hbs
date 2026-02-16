@@ -1,0 +1,54 @@
+import { prisma } from "@/lib/prisma";
+import { randomBytes } from "crypto";
+
+export async function createInvitation({
+  teamId,
+  email,
+  role,
+  invitedById,
+}: {
+  teamId: string;
+  email: string;
+  role: string;
+  invitedById: string;
+}) {
+  const token = randomBytes(32).toString("hex");
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+
+  const invitation = await prisma.teamInvitation.create({
+    data: { teamId, email, role, token, invitedById, expiresAt },
+  });
+
+{{#if hasEmailInvite}}
+  // TODO: Send invitation email
+  console.log(`Invitation sent to ${email} with token ${token}`);
+{{/if}}
+
+  return invitation;
+}
+
+export async function acceptInvitation(token: string, userId: string) {
+  const invitation = await prisma.teamInvitation.findUnique({ where: { token } });
+
+  if (!invitation) throw new Error("Invalid invitation");
+  if (invitation.expiresAt < new Date()) throw new Error("Invitation expired");
+  if (invitation.acceptedAt) throw new Error("Invitation already used");
+
+  await prisma.$transaction([
+    prisma.teamMember.create({
+      data: { teamId: invitation.teamId, userId, role: invitation.role },
+    }),
+    prisma.teamInvitation.update({
+      where: { id: invitation.id },
+      data: { acceptedAt: new Date() },
+    }),
+  ]);
+
+  return invitation;
+}
+
+export async function getPendingInvitations(teamId: string) {
+  return prisma.teamInvitation.findMany({
+    where: { teamId, acceptedAt: null, expiresAt: { gt: new Date() } },
+  });
+}

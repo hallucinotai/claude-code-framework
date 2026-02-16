@@ -1,0 +1,25 @@
+{{#if isDashboard}}
+import { requireAuth } from "@/lib/auth-utils";
+
+export default async function {{pageNamePascal}}Page() {
+  await requireAuth();
+
+  return (
+    <div className="space-y-6 p-6">
+      <h1 className="text-2xl font-bold">{{pageNamePascal}}</h1>
+      <p className="text-gray-600">This is the {{pageName}} page.</p>
+      {/* TODO: Add page content */}
+    </div>
+  );
+}
+{{else}}
+export default function {{pageNamePascal}}Page() {
+  return (
+    <div className="mx-auto max-w-4xl px-4 py-16">
+      <h1 className="text-3xl font-bold">{{pageNamePascal}}</h1>
+      <p className="mt-4 text-gray-600">This is the {{pageName}} page.</p>
+      {/* TODO: Add page content */}
+    </div>
+  );
+}
+{{/if}}

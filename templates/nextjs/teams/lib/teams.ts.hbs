@@ -1,0 +1,38 @@
+import { prisma } from "@/lib/prisma";
+
+export async function createTeam({ name, ownerId, tenantId }: { name: string; ownerId: string; tenantId: string }) {
+  return prisma.team.create({
+    data: {
+      name,
+      tenantId,
+      members: { create: { userId: ownerId, role: "owner" } },
+    },
+    include: { members: true },
+  });
+}
+
+export async function getTeamsForUser(userId: string, tenantId: string) {
+  return prisma.team.findMany({
+    where: { tenantId, members: { some: { userId } } },
+    include: { members: { include: { user: { select: { id: true, name: true, email: true, image: true } } } } },
+  });
+}
+
+export async function getTeamById(teamId: string) {
+  return prisma.team.findUnique({
+    where: { id: teamId },
+    include: { members: { include: { user: { select: { id: true, name: true, email: true, image: true } } } } },
+  });
+}
+
+export async function addTeamMember(teamId: string, userId: string, role: string = "member") {
+  return prisma.teamMember.create({ data: { teamId, userId, role } });
+}
+
+export async function removeTeamMember(teamId: string, userId: string) {
+  return prisma.teamMember.deleteMany({ where: { teamId, userId } });
+}
+
+export async function updateMemberRole(teamId: string, userId: string, role: string) {
+  return prisma.teamMember.updateMany({ where: { teamId, userId }, data: { role } });
+}

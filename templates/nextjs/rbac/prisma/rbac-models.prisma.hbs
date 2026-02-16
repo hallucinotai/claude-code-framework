@@ -1,0 +1,20 @@
+{{#if isPermissionBased}}
+model Permission {
+  id       String @id @default(cuid())
+  resource String
+  action   String
+  rolePermissions RolePermission[]
+
+  @@unique([resource, action])
+}
+
+model RolePermission {
+  id           String     @id @default(cuid())
+  role         String
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([role, permissionId])
+  @@index([role])
+}
+{{/if}}

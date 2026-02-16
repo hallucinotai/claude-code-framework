@@ -1,0 +1,9 @@
+model OnboardingProgress {
+  id             String    @id @default(cuid())
+  userId         String    @unique
+  currentStep    String
+  completedSteps Json      @default("[]")
+  completedAt    DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
