@@ -2,6 +2,9 @@
 
 A **Claude Code framework** for building full-stack SaaS applications. Provides guided wizards, specialized agents, and domain-specific skills to take you from project initialization through deployment and monitoring.
 
+[![GitHub Sponsors](https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-ea4aaa?logo=github)](https://github.com/sponsors/hallucinotai)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/hallucinotai)
+
 ## What is this?
 
 SaaS Playbook is an NPM package that installs into your project and gives Claude Code a complete set of custom `/` commands, AI agents, and knowledge skills for building SaaS applications. Instead of starting from scratch, you get an opinionated-but-flexible framework that guides you through every phase of SaaS development.

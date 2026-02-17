@@ -36,5 +36,15 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/hallucinotai/claude-code-framework.git"
-  }
+  },
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/hallucinotai"
+    },
+    {
+      "type": "individual",
+      "url": "https://buymeacoffee.com/hallucinotai"
+    }
+  ]
 }
