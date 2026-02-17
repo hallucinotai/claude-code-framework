@@ -1,20 +1,20 @@
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background">
       <main className="flex flex-col items-center gap-8 px-4 text-center">
         <div className="flex flex-col gap-4">
-          <h1 className="text-5xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
+          <h1 className="text-5xl font-bold tracking-tight text-foreground">
             {{projectName}}
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl">
+          <p className="text-xl text-muted-foreground max-w-2xl">
             {{description}}
           </p>
         </div>
 
         <div className="flex flex-col gap-4 items-center">
-          <p className="text-sm text-gray-500 dark:text-gray-500">
+          <p className="text-sm text-muted-foreground">
             Get started by editing{" "}
-            <code className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-sm font-mono">
+            <code className="px-2 py-1 bg-muted rounded text-sm font-mono">
               app/page.tsx
             </code>
           </p>
@@ -24,7 +24,7 @@ export default function Home() {
               href="https://nextjs.org/docs"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+              className="px-6 py-3 bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg font-medium transition-colors"
             >
               Read the docs
             </a>
@@ -32,7 +32,7 @@ export default function Home() {
               href="https://www.prisma.io/docs"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-6 py-3 bg-gray-800 hover:bg-gray-900 text-white rounded-lg font-medium transition-colors"
+              className="px-6 py-3 bg-foreground hover:bg-foreground/90 text-background rounded-lg font-medium transition-colors"
             >
               Prisma Docs
             </a>
@@ -40,43 +40,43 @@ export default function Home() {
         </div>
 
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl w-full">
-          <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-            <h2 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
+          <div className="p-6 bg-card rounded-lg shadow-sm border border-border">
+            <h2 className="text-lg font-semibold mb-2 text-card-foreground">
               Database Setup
             </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-muted-foreground">
               Configure your DATABASE_URL in .env and run{" "}
-              <code className="text-xs bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded">
+              <code className="text-xs bg-muted px-1 py-0.5 rounded">
                 npm run db:push
               </code>
             </p>
           </div>
 
-          <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-            <h2 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
+          <div className="p-6 bg-card rounded-lg shadow-sm border border-border">
+            <h2 className="text-lg font-semibold mb-2 text-card-foreground">
               Authentication
             </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-muted-foreground">
               NextAuth.js is ready. Set NEXTAUTH_SECRET in .env to get started with auth.
             </p>
           </div>
 
-          <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-            <h2 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
+          <div className="p-6 bg-card rounded-lg shadow-sm border border-border">
+            <h2 className="text-lg font-semibold mb-2 text-card-foreground">
               Styling
             </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Tailwind CSS is configured and ready. Customize in tailwind.config.ts.
+            <p className="text-sm text-muted-foreground">
+              Tailwind CSS is configured with theme tokens. Customize your colors in app/theme.css.
             </p>
           </div>
 
-          <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-            <h2 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
+          <div className="p-6 bg-card rounded-lg shadow-sm border border-border">
+            <h2 className="text-lg font-semibold mb-2 text-card-foreground">
               Testing
             </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-muted-foreground">
               Vitest is set up. Run{" "}
-              <code className="text-xs bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded">
+              <code className="text-xs bg-muted px-1 py-0.5 rounded">
                 npm test
               </code>{" "}
               to start testing.
@@ -85,13 +85,13 @@ export default function Home() {
         </div>
       </main>
 
-      <footer className="mt-16 mb-8 text-center text-sm text-gray-500 dark:text-gray-500">
+      <footer className="mt-16 mb-8 text-center text-sm text-muted-foreground">
         Built with{" "}
         <a
           href="https://github.com/your-repo/saas-playbook"
           target="_blank"
           rel="noopener noreferrer"
-          className="underline hover:text-gray-700 dark:hover:text-gray-300"
+          className="underline hover:text-foreground transition-colors"
         >
           SaaS Playbook
         </a>

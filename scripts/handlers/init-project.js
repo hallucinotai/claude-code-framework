@@ -2,6 +2,7 @@ const path = require('path');
 const { render, renderDir } = require('../lib/renderer');
 const { writeFiles } = require('../lib/writer');
 const { kebabCase, pascalCase } = require('../lib/helpers');
+const { getTheme } = require('../lib/themes');
 
 /**
  * Scaffold the initial Next.js project skeleton.
@@ -9,11 +10,15 @@ const { kebabCase, pascalCase } = require('../lib/helpers');
  * @param {string} options.name - Project name
  * @param {string} options.description - Project description
  * @param {boolean} options.docker - Whether to include Docker files
+ * @param {string} options.theme - Theme name (defaults to 'snow')
  */
 async function run(options, config) {
   const name = options.name || 'my-saas-app';
   const description = options.description || 'A SaaS application built with Next.js';
   const isDocker = options.docker === true || options.docker === 'true';
+
+  const themeName = (options.theme || 'snow').toLowerCase().trim();
+  const themeData = getTheme(themeName);
 
   const data = {
     projectName: name,
@@ -21,6 +26,12 @@ async function run(options, config) {
     projectNamePascal: pascalCase(name),
     description,
     isDocker,
+    themeName: themeData.label,
+    themeDescription: themeData.description,
+    theme: {
+      light: themeData.light,
+      dark: themeData.dark,
+    },
   };
 
   const templateDir = path.resolve(__dirname, '../../templates/nextjs/init');

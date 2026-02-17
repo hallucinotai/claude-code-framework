@@ -63,6 +63,33 @@ Options:
 
 Store their choice as a boolean (e.g. `dockerize: true/false`).
 
+## Step 3.6: Theme Selection
+
+Present the 15 premium, Apple-inspired themes and ask the user to choose one:
+
+| # | Theme | Type | Description |
+|---|-------|------|-------------|
+| 1 | **Snow** | Light | Pure white, near-black text, blue accent — Apple's classic light feel |
+| 2 | **Obsidian** | Dark | Deep black, white text, blue accent — Apple dark mode |
+| 3 | **Slate** | Light | Cool blue-gray tones, refined corporate |
+| 4 | **Ivory** | Light | Warm off-white, stone tones, near-black accent |
+| 5 | **Midnight** | Dark | Deep navy, light text, sky blue accent |
+| 6 | **Pearl** | Light | Soft off-white, muted rose accent |
+| 7 | **Carbon** | Dark | Dark charcoal, crisp white text, emerald accent |
+| 8 | **Sandstone** | Light | Warm beige/sand, amber accent |
+| 9 | **Graphite** | Dark | iOS-inspired dark gray, warm orange accent |
+| 10 | **Porcelain** | Light | Clean white, navy accent — authority feel |
+| 11 | **Onyx** | Dark | True black, gold luxury accent |
+| 12 | **Fog** | Light | Silver-gray, teal accent — calm and quiet |
+| 13 | **Espresso** | Dark | Deep warm brown, copper accent |
+| 14 | **Arctic** | Light | Cool blue-white, cyan accent |
+| 15 | **Dusk** | Dark | Dark purple-gray, lavender accent |
+
+> **Pick a theme** by number or name. Default is **Snow** (1).
+> All theme colors are stored in a single `app/theme.css` file — you can customize them anytime.
+
+Store the user's choice as the lowercase theme name (e.g. `snow`, `obsidian`, `midnight`).
+
 ## Step 4: SaaS Features Selection
 
 Present the list of available SaaS modules and ask which to enable. Group them clearly:
@@ -106,6 +133,8 @@ Write the `.saas-playbook.yml` file with all the user's choices. Set `progress.i
 
 If the user chose Docker in Step 3.5, also set `deployment.containerized: true` in the config.
 
+Store the theme choice under `ui.theme: <theme-name>` (e.g. `ui.theme: obsidian`).
+
 ## Step 7: Generate CLAUDE.md
 
 Create or update the project's `CLAUDE.md` file tailored to the chosen stack. Include:
@@ -126,10 +155,12 @@ Run the scaffolding script with the user's choices:
 node scripts/scaffold.js init-project \
   --name=<project-name> \
   --description="<project-description>" \
-  --docker=<true|false>
+  --docker=<true|false> \
+  --theme=<theme-name>
 ```
 
 Include `--docker=true` if the user chose Docker in Step 3.5.
+Include `--theme=<theme-name>` with the user's theme choice from Step 3.6 (e.g. `--theme=obsidian`). If omitted, defaults to `snow`.
 
 The script will create all boilerplate files (package.json, tsconfig.json, .eslintrc, tailwind.config, prisma/schema.prisma, app/layout.tsx, app/page.tsx, etc.). When Docker is enabled, it also generates `Dockerfile`, `docker-compose.yml`, and `.dockerignore`. Review its output and then:
 - Verify the generated files match the user's preferences
@@ -147,13 +178,15 @@ Print a clear summary:
 ```
 Project: [name]
 Stack: [frontend] + [backend] + [database]
+Theme: [theme-name] — [theme-description]
 Features: [list of enabled features]
 Architecture: [pattern] with [api-style] API
 
 Files created:
   - .saas-playbook.yml (project config)
   - CLAUDE.md (project instructions)
-  - [list of scaffolded files]
+  - app/theme.css (theme color tokens — edit to customize)
+  - [list of other scaffolded files]
 ```
 
 If Docker was enabled, also list the Docker files in the summary (Dockerfile, docker-compose.yml, .dockerignore) and mention:

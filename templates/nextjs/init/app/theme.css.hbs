@@ -1,0 +1,45 @@
+/*
+ * Theme: {{themeName}} — {{themeDescription}}
+ *
+ * Color tokens:
+ *   --background        Page background
+ *   --foreground        Primary text
+ *   --card              Card / surface background
+ *   --card-foreground   Text on cards
+ *   --muted             Subtle background (badges, code blocks)
+ *   --muted-foreground  Secondary / helper text
+ *   --border            Borders and dividers
+ *   --accent            Primary action color (buttons, links)
+ *   --accent-foreground Text on accent-colored elements
+ *   --ring              Focus ring color
+ *
+ * Edit these values to customize your palette.
+ */
+
+:root {
+  --background: {{theme.light.background}};
+  --foreground: {{theme.light.foreground}};
+  --card: {{theme.light.card}};
+  --card-foreground: {{theme.light.cardForeground}};
+  --muted: {{theme.light.muted}};
+  --muted-foreground: {{theme.light.mutedForeground}};
+  --border: {{theme.light.border}};
+  --accent: {{theme.light.accent}};
+  --accent-foreground: {{theme.light.accentForeground}};
+  --ring: {{theme.light.ring}};
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: {{theme.dark.background}};
+    --foreground: {{theme.dark.foreground}};
+    --card: {{theme.dark.card}};
+    --card-foreground: {{theme.dark.cardForeground}};
+    --muted: {{theme.dark.muted}};
+    --muted-foreground: {{theme.dark.mutedForeground}};
+    --border: {{theme.dark.border}};
+    --accent: {{theme.dark.accent}};
+    --accent-foreground: {{theme.dark.accentForeground}};
+    --ring: {{theme.dark.ring}};
+  }
+}
